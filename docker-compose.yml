@@ -1,0 +1,31 @@
+services:
+  web:
+    build: .
+    command: "gunicorn api.wsgi -b 0.0.0.0:8000 --reload"
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - test
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/app
+  db:
+    container_name: projmel-db
+    image: postgres
+    volumes:
+      - projmel:/var/lib/postgresql/data/pgdata
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
+    networks:
+      - test
+networks:
+  test:
+    external: true
+volumes:
+  projmel:
+    external: true
