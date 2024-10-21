@@ -4,30 +4,30 @@ import uuid
 from django.contrib.auth.models import UserManager, AbstractBaseUser, PermissionsMixin
 
 class CustomUserManager(UserManager):
-    def _create_user(self, username, email, password=None, **extra_fields):
+    def _create_user(self, name, email, password=None, **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
 
         # see if email is valid
         email = self.normalize_email(email)
 
-        user = self.model(email=email, username=username, **extra_fields)
+        user = self.model(email=email, name=name, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_user(self, username=None, email=None, password=None, **extra_fields):
+    def create_user(self, name=None, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
 
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(name, email, password, **extra_fields)
 
-    def create_superuser(self, username=None, email=None, password=None, **extra_fields):
+    def create_superuser(self, name=None, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(name, email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
