@@ -34,7 +34,10 @@ class UserSerializer(serializers.ModelSerializer):
 
         return super(UserSerializer, self).validate(data)
 
+
+
     class Meta(object):
         model = User
         fields = ['id', 'name', 'email', 'password']
+
 
