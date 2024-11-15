@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     networks:
-      - test
+      - projmel-network
     env_file:
       - ./.env
     volumes:
@@ -22,9 +22,9 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - test
+      - projmel-network
 networks:
-  test:
+  projmel-network:
     external: true
 volumes:
   projmel:

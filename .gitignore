@@ -1,4 +1,5 @@
 /.idea
 /venv
+/media_root
 .env
 *.sqlite3
