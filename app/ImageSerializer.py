@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from app.models import Images
+from user.models import User
+
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,13 +17,16 @@ class MultiImageSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         images = validated_data.pop('multiImages')
+
+        user = User.objects.filter(id=validated_data["user"]).first()
         imagesResponse = []
         for image in images:
-            imageCreate = Images.objects.create(image=image)
+
+            imageCreate = Images.objects.create(image=image,user=user)
             imagesResponse.append({"id": str(imageCreate.id), "image": str(imageCreate.image)})
 
         return imagesResponse
 
     class Meta:
         model = Images
-        fields = ["id", "multiImages"]
+        fields = ["id", "user", "multiImages"]
