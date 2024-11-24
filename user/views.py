@@ -37,6 +37,8 @@ def Login(request):
 
         refresh = RefreshToken.for_user(user)
         token = refresh.access_token
-        return JsonResponse({'access': str(token), 'refreshToken': str(refresh)}, status=200)
+        userRes = UserSerializer(user)
+
+        return JsonResponse({'access': str(token), 'refreshToken': str(refresh), 'user' : userRes.data}, status=200)
 
 
