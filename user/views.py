@@ -62,18 +62,34 @@ def CreateResetPasswordToken(request):
 
 
 @api_view(['post'])
-def ValidResetPasswordToken(request):
+def ValidResetPasswordToken(request, tokenId):
+
+    password = request.data['newPassword']
+    confirm_password = request.data['newPasswordConfirm']
+
+    error = ""
 
     serializer = ResetPasswordTokenSerializer(data=request.data)
 
     if serializer.is_valid():
-        tokenId = request.query_parans.get('tokenId')
 
         token = ResetPasswordToken.objects.filter(id=tokenId).first()
 
         if serializer.isTokenValid(token):
-            print(token.user)
-            return JsonResponse({'token': token.id}, status=200)
+
+            if password == confirm_password:
+                serializer.changePassword(validated_data=request.data, user=token.user)
+
+                token.delete()
+
+                return JsonResponse({'msg': "password changed"}, status=200)
+            else:
+                error = "Password does not match"
+        else:
+            error = "Invalid token"
+
+
+        return JsonResponse({'Error': error}, status=400)
     else:
 
         return JsonResponse(serializer.errors, status=400)

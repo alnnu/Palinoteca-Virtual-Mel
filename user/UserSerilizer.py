@@ -1,17 +1,19 @@
-from contextlib import nullcontext
 from datetime import datetime, timedelta
-from math import trunc
-from multiprocessing.managers import Token
-from operator import truediv
 
 from django.core import exceptions
 
 from rest_framework import serializers
 from user.models import User, ResetPasswordToken
+import pytz
 import django.contrib.auth.password_validation as validators
 
 
 class UserSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        user.save()
+        return user
 
     def validate(self, data):
         # here data has all the fields which have validated values
@@ -77,12 +79,10 @@ class ResetPasswordTokenSerializer(serializers.ModelSerializer):
 
     def isTokenValid(self, token):
 
-        dateToExpire = token.dateToExpire
-
         if token is not None:
+            dateToExpire = token.dateToExpire
 
-            if dateToExpire < datetime.now:
-
+            if dateToExpire > datetime.now().replace(tzinfo=pytz.utc):
                 user = User.objects.get(id=token.user_id)
 
                 if user is None:
@@ -93,6 +93,10 @@ class ResetPasswordTokenSerializer(serializers.ModelSerializer):
                 return False
         else:
             return False
+
+    def changePassword(self, validated_data, user):
+        user.set_password(validated_data.get('newPassword'))
+        user.save()
 
 
 
