@@ -7,3 +7,4 @@ dj_rest_auth
 django-cors-headers
 bcrypt
 PILLOW
+pytz

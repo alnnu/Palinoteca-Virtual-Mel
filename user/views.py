@@ -4,7 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from user.UserSerilizer import UserSerializer
+from user.UserSerilizer import UserSerializer, ResetPasswordTokenSerializerCreate, ResetPasswordTokenSerializer
+from user.models import ResetPasswordToken
+
 
 @api_view(['post'])
 def Create(request):
@@ -37,6 +39,57 @@ def Login(request):
 
         refresh = RefreshToken.for_user(user)
         token = refresh.access_token
-        return JsonResponse({'access': str(token), 'refreshToken': str(refresh)}, status=200)
+        userRes = UserSerializer(user)
+
+        return JsonResponse({'access': str(token), 'refreshToken': str(refresh), 'user' : userRes.data}, status=200)
 
 
+@api_view(['post'])
+def CreateResetPasswordToken(request):
+
+    serializer = ResetPasswordTokenSerializerCreate(data=request.data)
+
+    if serializer.is_valid():
+        token = serializer.create(request.data)
+
+        if token is not None:
+            return JsonResponse({"Token": token.id}, status=201)
+        else:
+            return JsonResponse({'error': 'User not Found'}, status=400)
+    else:
+
+        return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['post'])
+def ValidResetPasswordToken(request, tokenId):
+
+    password = request.data['newPassword']
+    confirm_password = request.data['newPasswordConfirm']
+
+    error = ""
+
+    serializer = ResetPasswordTokenSerializer(data=request.data)
+
+    if serializer.is_valid():
+
+        token = ResetPasswordToken.objects.filter(id=tokenId).first()
+
+        if serializer.isTokenValid(token):
+
+            if password == confirm_password:
+                serializer.changePassword(validated_data=request.data, user=token.user)
+
+                token.delete()
+
+                return JsonResponse({'msg': "password changed"}, status=200)
+            else:
+                error = "Password does not match"
+        else:
+            error = "Invalid token"
+
+
+        return JsonResponse({'Error': error}, status=400)
+    else:
+
+        return JsonResponse(serializer.errors, status=400)
