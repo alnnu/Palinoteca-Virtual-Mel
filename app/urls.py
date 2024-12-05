@@ -1,7 +1,7 @@
 
 from django.urls import path
 
-from app.views import create, createMulti, createScenario, getAllScenarios, getScenarioById, updateScenarioById, deleteScenarioById
+from app.views import create, createMulti, createScenario, getAllScenarios, getScenarioById, updateScenarioById, deleteScenarioById, restoreScenarioById
 
 urlpatterns = [
     path('/image/upload', create, name='upload'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('/image/scenario/<id>', getScenarioById, name='getScenarioById'),
     path('/image/scenario/update/<id>', updateScenarioById, name='updateScenarioById'),
     path('/image/scenario/delete/<id>', deleteScenarioById, name='deleteScenarioById'),
+    path('/image/scenario/restore/<id>', restoreScenarioById, name='restoreScenarioById'),
 ]

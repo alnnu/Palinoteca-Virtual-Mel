@@ -86,9 +86,23 @@ def updateScenarioById(request, id):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def deleteScenarioById(request, id):
-    scenario = Scenario.objects.filter(id=id).first()
+    scenario = Scenario.objects.filter(id=id, isDeleted = False).first()
     if scenario is not None:
-        scenario.delete()
+        scenario.isDeleted = True
+        scenario.save()
         return Response(data={"msg": "Scenario object deleted"},status=200)
+    else:
+        return Response(status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def restoreScenarioById(request, id):
+    scenario = Scenario.objects.filter(id=id).first()
+
+    if scenario is not None:
+        scenario.isDeleted = False
+        scenario.save()
+        serializer = ScenarioSerializer(scenario)
+        return Response(data=serializer.data,status=200)
     else:
         return Response(status=404)

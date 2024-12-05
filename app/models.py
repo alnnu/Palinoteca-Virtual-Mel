@@ -13,9 +13,13 @@ def upload_to(instance, filename):
 class Scenario(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
 
     description = models.TextField(unique=True)
+
+    plant = models.TextField(unique=True)
+
+    isDeleted = models.BooleanField(default=False)
 
     objects = models.Manager()
 
