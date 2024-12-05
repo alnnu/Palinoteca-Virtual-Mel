@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Images
+from app.models import Images, Scenario
 from user.models import User
 
 
@@ -30,3 +30,8 @@ class MultiImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
         fields = ["id", "user", "multiImages"]
+
+class ScenarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scenario
+        fields = "__all__"
