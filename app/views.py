@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from .ImageSerializer import ImageSerializer, MultiImageSerializer, ScenarioSerializer
 
-from .models import Scenario
+from .models import Scenario, Images
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -64,6 +64,20 @@ def getScenarioById(request, id):
 
     if scenario is not None:
         serializer = ScenarioSerializer(scenario)
+        return Response(data=serializer.data, status=200)
+    else:
+        return Response(status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getImagesByScenario(request, scenario_id):
+    scenario = Scenario.objects.filter(id=scenario_id).first()
+
+    if scenario is not None:
+        images = Images.objects.filter(scenario=scenario)
+
+        serializer = ImageSerializer(images, many=True)
+
         return Response(data=serializer.data, status=200)
     else:
         return Response(status=404)
