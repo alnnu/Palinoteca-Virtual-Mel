@@ -1,9 +1,11 @@
 from http.client import responses
 
+from django.core.paginator import Paginator
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from .ImageSerializer import ImageSerializer, MultiImageSerializer, ScenarioSerializer
 
@@ -16,7 +18,7 @@ def create(request):
     serializer = ImageSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        print(serializer.data)
+
         return Response(data=serializer.data, status=201)
     else:
         return Response(data=serializer.errors, status=400)
@@ -29,7 +31,7 @@ def createMulti(request):
 
     if serializer.is_valid():
         res =  serializer.create(request.data)
-        print(serializer)
+
         return Response(data=res, status=201)
     else:
         return Response(data=serializer.errors, status=400)
@@ -52,10 +54,16 @@ def createScenario(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getAllScenarios(request):
-    scenarios = Scenario.objects.all()
-    serializer = ScenarioSerializer(scenarios, many=True)
+    paginator = PageNumberPagination()
 
-    return Response(data=serializer.data, status=200)
+    scenarios = Scenario.objects.all()
+
+    paginated_notes = paginator.paginate_queryset(scenarios, request)
+
+    serializer = ScenarioSerializer(paginated_notes, many=True)
+
+
+    return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -71,14 +79,20 @@ def getScenarioById(request, id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getImagesByScenario(request, scenario_id):
+
+    paginator = PageNumberPagination()
+
     scenario = Scenario.objects.filter(id=scenario_id).first()
 
     if scenario is not None:
-        images = Images.objects.filter(scenario=scenario)
+        images = Images.objects.all().filter(scenario=scenario)
 
-        serializer = ImageSerializer(images, many=True)
+        paginated_notes = paginator.paginate_queryset(images, request)
 
-        return Response(data=serializer.data, status=200)
+        serializer = ImageSerializer(paginated_notes, many=True)
+
+
+        return paginator.get_paginated_response(serializer.data)
     else:
         return Response(status=404)
 @api_view(['PUT'])
@@ -108,7 +122,7 @@ def deleteScenarioById(request, id):
     else:
         return Response(status=404)
 
-@api_view(['GET'])
+@api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def restoreScenarioById(request, id):
     scenario = Scenario.objects.filter(id=id).first()
@@ -120,3 +134,5 @@ def restoreScenarioById(request, id):
         return Response(data=serializer.data,status=200)
     else:
         return Response(status=404)
+
+
