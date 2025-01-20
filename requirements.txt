@@ -8,3 +8,4 @@ django-cors-headers
 bcrypt
 PILLOW
 pytz
+drf_yasg
