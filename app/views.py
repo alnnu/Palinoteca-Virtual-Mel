@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-from .ImageSerializer import ImageSerializer, MultiImageSerializer, ScenarioSerializer
+from .Serializers import ImageSerializer, MultiImageSerializer, ScenarioSerializer
 
 from .models import Scenario, Images
 
