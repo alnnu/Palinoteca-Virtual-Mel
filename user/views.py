@@ -1,13 +1,37 @@
+from drf_yasg import openapi
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_yasg.utils import swagger_auto_schema
 
 from user.UserSerilizer import UserSerializer, ResetPasswordTokenSerializerCreate, ResetPasswordTokenSerializer
 from user.models import ResetPasswordToken
 
 
+@swagger_auto_schema(
+    methods=['POST'],
+    operation_description="create an user",
+    responses={400: 'Bad Request', 201: openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(type=openapi.FORMAT_UUID),
+            'email': openapi.Schema(type=openapi.TYPE_STRING),
+            'name': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    )},
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['email','passwordConfirm', 'password', 'name'],
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING),
+            'passwordConfirm': openapi.Schema(type=openapi.TYPE_STRING),
+            'password': openapi.Schema(type=openapi.TYPE_STRING),
+            'name': openapi.Schema(type=openapi.TYPE_STRING),
+        },
+    ),
+    )
 @api_view(['post'])
 def Create(request):
     password = request.data['password']
@@ -26,6 +50,32 @@ def Create(request):
 
     return Response(serializer.errors, status=400)
 
+@swagger_auto_schema(
+    methods=['POST'],
+    operation_description="login an user",
+    responses={400: 'Bad Request', 200: openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'access': openapi.Schema(type=openapi.TYPE_STRING),
+            'refreshToken': openapi.Schema(type=openapi.TYPE_STRING),
+            'user': openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'id': openapi.Schema(type=openapi.FORMAT_UUID),
+                            'email': openapi.Schema(type=openapi.TYPE_STRING),
+                            'name': openapi.Schema(type=openapi.TYPE_STRING),
+                        })
+        }
+    )},
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['email', 'password'],
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING),
+            'password': openapi.Schema(type=openapi.TYPE_STRING),
+        },
+    ),
+    )
 @api_view(['post'])
 def Login(request):
     password = request.data['password']
@@ -44,6 +94,24 @@ def Login(request):
         return JsonResponse({'access': str(token), 'refreshToken': str(refresh), 'user' : userRes.data}, status=200)
 
 
+
+@swagger_auto_schema(
+    methods=['POST'],
+    operation_description="create an password reset token",
+    responses={400: 'Bad Request', 201: openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'Token': openapi.Schema(type=openapi.TYPE_STRING)
+        }
+    )},
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['refresh'],
+        properties={
+            'userEmail': openapi.Schema(type=openapi.TYPE_STRING),
+        },
+    ),
+    )
 @api_view(['post'])
 def CreateResetPasswordToken(request):
 
@@ -61,6 +129,27 @@ def CreateResetPasswordToken(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+@swagger_auto_schema(
+    methods=['POST'],
+    operation_description="reset password",
+    manual_parameters=[
+      openapi.Parameter(name='tokenId', in_=openapi.IN_PATH, type=openapi.TYPE_STRING, required=True),
+    ],
+    responses={400: 'Bad Request', 200: openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'msg': openapi.Schema(type=openapi.TYPE_STRING)
+        }
+    )},
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['newPassword', 'newPasswordConfirm'],
+        properties={
+            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
+            'newPasswordConfirm': openapi.Schema(type=openapi.TYPE_STRING),
+        },
+    ),
+    )
 @api_view(['post'])
 def ValidResetPasswordToken(request, tokenId):
 
