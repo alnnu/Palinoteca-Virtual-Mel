@@ -52,7 +52,7 @@ def Create(request):
 
 @swagger_auto_schema(
     methods=['POST'],
-    operation_description="create an user",
+    operation_description="login an user",
     responses={400: 'Bad Request', 200: openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -97,7 +97,7 @@ def Login(request):
 
 @swagger_auto_schema(
     methods=['POST'],
-    operation_description="create an user",
+    operation_description="create an password reset token",
     responses={400: 'Bad Request', 201: openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -131,7 +131,10 @@ def CreateResetPasswordToken(request):
 
 @swagger_auto_schema(
     methods=['POST'],
-    operation_description="create an user",
+    operation_description="reset password",
+    manual_parameters=[
+      openapi.Parameter(name='tokenId', in_=openapi.IN_PATH, type=openapi.TYPE_STRING, required=True),
+    ],
     responses={400: 'Bad Request', 200: openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
