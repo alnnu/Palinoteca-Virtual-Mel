@@ -152,7 +152,6 @@ def CreateResetPasswordToken(request):
     )
 @api_view(['post'])
 def ValidResetPasswordToken(request, tokenId):
-
     password = request.data['newPassword']
     confirm_password = request.data['newPasswordConfirm']
 

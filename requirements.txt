@@ -9,3 +9,5 @@ bcrypt
 PILLOW
 pytz
 drf_yasg
+celery
+redis

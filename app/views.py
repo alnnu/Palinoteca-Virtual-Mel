@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from api.tasks import my_task
 
 from .Serializers import ImageSerializer, MultiImageSerializer, ScenarioSerializer
 
@@ -28,6 +29,10 @@ from .models import Scenario, Images
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
 def create(request):
+    result = my_task.delay(3, 5)
+
+    print(result.get())
+
     serializer = ImageSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()

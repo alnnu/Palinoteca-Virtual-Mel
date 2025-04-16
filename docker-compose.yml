@@ -6,10 +6,12 @@ services:
       - 8000:8000
     depends_on:
       - db
+      - redis
     env_file:
       - ./.env
     volumes:
       - ./:/app
+
   db:
     container_name: projmel-db
     image: postgres
@@ -19,6 +21,19 @@ services:
       - ./.env
     ports:
       - "5432:5432"
+  redis:
+    image: redis:alpine
+  celery:
+    build: .
+    command: celery -A api worker -l info
+    volumes:
+      - ./:/app
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    depends_on:
+      - redis
 
 volumes:
   projmel:
