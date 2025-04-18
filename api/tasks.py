@@ -1,6 +1,9 @@
-from celery import shared_task
+from IA.inferencia import inferencia
+from api.celery import app
 
-@shared_task
-def my_task(arg1, arg2):
-    result = arg1 + arg2
-    return result
+@app.task()
+def alanise(file):
+   return inferencia(file)
+
+
+

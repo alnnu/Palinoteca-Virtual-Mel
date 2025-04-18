@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: "gunicorn api.wsgi -b 0.0.0.0:8000 --reload"
+    command: "gunicorn api.wsgi --timeout 120 -b 0.0.0.0:8000 --reload "
     ports:
       - 8000:8000
     depends_on:
@@ -25,7 +25,9 @@ services:
     image: redis:alpine
   celery:
     build: .
-    command: celery -A api worker -l info
+    command: "celery -A api worker -l info"
+    env_file:
+      - ./.env
     volumes:
       - ./:/app
     environment:

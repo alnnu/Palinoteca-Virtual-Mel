@@ -11,3 +11,9 @@ pytz
 drf_yasg
 celery
 redis
+numpy
+keras==3.2
+tensorflow[and-cuda]==2.17
+scikit-learn
+pybind11>=2.12
+numba
