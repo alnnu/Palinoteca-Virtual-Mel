@@ -15,7 +15,7 @@ class Scenario(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
 
-    description = models.TextField(unique=True)
+    description = models.TextField(null=True)
 
     plant = models.TextField(unique=True)
 

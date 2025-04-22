@@ -20,7 +20,14 @@ from .models import Scenario, Images
             'id': openapi.Schema(type=openapi.FORMAT_UUID),
             'image': openapi.Schema(type=openapi.TYPE_STRING),
             'user': openapi.Schema(type=openapi.FORMAT_UUID),
-            'scenario': openapi.Schema(type=openapi.TYPE_STRING),
+            'scenario': openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                    properties={
+                        "id": openapi.Schema(type=openapi.FORMAT_UUID),
+                        "description": openapi.Schema(type=openapi.TYPE_STRING),
+                        "plant": openapi.Schema(type=openapi.TYPE_STRING),
+                    }
+            )
         }
     )}
 )
@@ -32,8 +39,10 @@ def create(request):
 
     serializer = ImageSerializer(data=request.data)
     if serializer.is_valid():
-        res = serializer.create(request.data)
-
+        try:
+            res = serializer.create(request.data)
+        except Exception as e:
+            return Response(data={"error": str(e)}, status=400)
         return Response(data=res, status=201)
     else:
         return Response(data=serializer.errors, status=400)
