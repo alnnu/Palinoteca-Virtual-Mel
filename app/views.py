@@ -81,6 +81,42 @@ def createMulti(request):
 
 
 @swagger_auto_schema(
+    methods=["get"],
+    operation_description="get all images by user",
+    responses={404: 'not found', 200: openapi.Schema(
+        type= openapi.TYPE_OBJECT,
+        properties={
+            "count": openapi.Schema(type=openapi.TYPE_INTEGER),
+            "next": openapi.Schema(type=openapi.FORMAT_URI),
+            "previous": openapi.Schema(type=openapi.FORMAT_URI),
+            "results": openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'id': openapi.Schema(type=openapi.FORMAT_UUID),
+                        'image': openapi.Schema(type=openapi.TYPE_STRING),
+                        'user': openapi.Schema(type=openapi.FORMAT_UUID),
+                    }
+                )
+            )
+        }
+    )}
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getAllImages(request, userId):
+    paginator = PageNumberPagination()
+
+    image = Images.objects.filter(user=userId).all()
+
+    paginated_notes = paginator.paginate_queryset(image, request)
+
+    serializer = ImageSerializer(paginated_notes, many=True)
+
+    return paginator.get_paginated_response(serializer.data)
+
+@swagger_auto_schema(
     methods=["post"],
     operation_description="create a scenario",
     request_body=ScenarioSerializer,

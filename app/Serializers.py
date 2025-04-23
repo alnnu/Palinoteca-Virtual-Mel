@@ -3,8 +3,15 @@ from app.models import Images, Scenario
 from user.models import User
 from api.tasks import alanise
 
-class ImageSerializer(serializers.ModelSerializer):
 
+class ScenarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scenario
+        fields = "__all__"
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    scenario = ScenarioSerializer(read_only=True)
     def create(self, validated_data):
         file = validated_data.pop('image')
 
@@ -14,12 +21,12 @@ class ImageSerializer(serializers.ModelSerializer):
 
         inferencia = alanise.delay(str(imageCreate.image))
 
-        senario = Scenario.objects.filter(plant=inferencia.get()).first()
+        scenario = Scenario.objects.filter(plant=inferencia.get()).first()
 
-        if senario is not None:
-            imageCreate.scenario = senario
+        if scenario is not None:
+            imageCreate.scenario = scenario
             imageCreate.save()
-        imagesResponse = {"id": str(imageCreate.id), "image": str(imageCreate.image), "scenario": {"id": str(senario.id), "description": senario.description, "plant": senario.plant}}
+        imagesResponse = {"id": str(imageCreate.id), "image": "/media/" + str(imageCreate.image), "scenario": {"id": str(scenario.id), "description": scenario.description, "plant": scenario.plant}}
 
 
         return imagesResponse
@@ -54,7 +61,3 @@ class MultiImageSerializer(serializers.ModelSerializer):
         model = Images
         fields = ["id", "user", "multiImages"]
 
-class ScenarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Scenario
-        fields = "__all__"

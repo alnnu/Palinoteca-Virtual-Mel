@@ -7,7 +7,6 @@ from keras.layers import Dense, Dropout, Flatten
 import os
 import numpy as n
 from tensorflow.keras.preprocessing import image
-from tensorflow.image import rgb_to_grayscale
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -39,7 +38,7 @@ def create_model(input_shape, n_classes, optimizer='rmsprop', fine_tune=0):
     model = Model(inputs=conv_base.input, outputs=output_layer)
 
 
-    # Compiles the model for training.
+    # Compiles the model fo training.
     model.compile(optimizer=optimizer,
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
@@ -55,7 +54,8 @@ def create_model(input_shape, n_classes, optimizer='rmsprop', fine_tune=0):
 def inferencia(file):
     input_shape = (224, 224, 3)
     n_classes = 16
-    classes = ['P-01','Lobeira','Muriçi','Muriçi macho','Ypê Amarelo','Algodãozinho do Cerrado','Caliandra','Ouratia','Cajuzinho','Muriçi Rosa','Fabaccia','Cipó Uva','P-62','P-69_','P-70','Pequi']
+    # classes = [1]
+    classes = ['P-01', 'Lobeira', 'Muriçi', 'Muriçi macho', 'Ypê Amarelo', 'Algodãozinho do Cerrado', 'Caliandra', 'Ouratia', 'Cajuzinho', 'Muriçi Rosa', 'Fabaccia', 'Cipó Uva', 'P-62', 'P-69_', 'P-70', 'Pequi']
 
     model = create_model(input_shape, n_classes)
 
@@ -63,19 +63,16 @@ def inferencia(file):
 
     print(file)
 
-
-    img = image.load_img(file, target_size=(224, 224), color_mode="grayscale")
-
+    img = image.load_img(file, target_size=input_shape)
     img_array = image.img_to_array(img)
-    img_array = n.repeat(img_array, 3, axis=2)
-
     img_array = n.expand_dims(img_array, axis=0)
+
     preds_ft = model.predict(img_array)
+
     pred_classes_ft = n.argmax(preds_ft, axis=1)
+
     print(pred_classes_ft[0])
 
     return classes[pred_classes_ft[0]]
-
-
 
 
