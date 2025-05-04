@@ -6,7 +6,7 @@ from app.views import create, createMulti, getAllImages, createScenario, getAllS
 urlpatterns = [
     path('/image/upload', create, name='upload'),
     path('/image/multi/upload', createMulti, name='create'),
-    path('/image/<userId>/all', getAllImages, name='getAllImages'),
+    path('/image/images/<userId>/all', getAllImages, name='getAllImages'),
     path('/image/scenario/create', createScenario, name='createScenario'),
     path('/image/scenario/all', getAllScenarios, name='getAllScenarios'),
     path('/image/scenario/<id>', getScenarioById, name='getScenarioById'),

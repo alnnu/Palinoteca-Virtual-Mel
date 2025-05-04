@@ -106,6 +106,7 @@ def createMulti(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getAllImages(request, userId):
+
     paginator = PageNumberPagination()
 
     image = Images.objects.filter(user=userId).all()
