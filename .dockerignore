@@ -1,2 +1,3 @@
 ./media_root
 ./IA/peso
+./**/__pycache__
