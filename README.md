@@ -7,8 +7,9 @@ Além de comparar e confirmar a origem botânica das amostras de méis, a plataf
 
  
 ## Participantes
-- Luann
-- Pedro
+- [Luann](https://github.com/alnnu)
+- [Pedro](https://github.com/Pedrofff23)
+
 
 ## Índice
 
@@ -40,4 +41,9 @@ Além de comparar e confirmar a origem botânica das amostras de méis, a plataf
       - react
       - docker
       - Rede Neural Convolucional
+
+### Agradecimento especial
+
+- [Alexandre](https://github.com/Zander404)
+
 
